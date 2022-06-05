@@ -7,10 +7,12 @@ import hpp from 'hpp';
 import morgan from 'morgan';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import { NODE_ENV, PORT, LOG_FORMAT, ORIGIN, CREDENTIALS } from '@config';
+import { NODE_ENV, PORT, LOG_FORMAT, ORIGIN, CREDENTIALS, PUBLIC_HOSTNAME } from '@config';
 import { Routes } from '@interfaces/routes.interface';
 import errorMiddleware from '@middlewares/error.middleware';
 import { logger, stream } from '@utils/logger';
+import { coordinator, InitializeService } from './utils/coordinator';
+import { CoordinatorPaths } from './interfaces/coordinator.interface';
 
 class App {
   public app: express.Application;
@@ -23,6 +25,7 @@ class App {
     this.port = PORT || 3000;
 
     this.initializeMiddlewares();
+    this.initializeCoordinator();
     this.initializeRoutes(routes);
     this.initializeSwagger();
     this.initializeErrorHandling();
@@ -50,6 +53,10 @@ class App {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(cookieParser());
+  }
+
+  private initializeCoordinator() {
+    InitializeService();
   }
 
   private initializeRoutes(routes: Routes[]) {
